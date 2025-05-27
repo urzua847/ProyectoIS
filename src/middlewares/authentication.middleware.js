@@ -1,41 +1,70 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/user.model");
-const { ACCESS_JWT_SECRET } = require("../config/configEnv");
+// src/middlewares/authentication.middleware.js
+// Adaptación de tu verifyJWT para que funcione con Sequelize y guarde el ID del usuario.
+import jwt from 'jsonwebtoken';
+import { ACCESS_JWT_SECRET } from '../config/configEnv.js';
+import { respondError } from '../utils/resHandler.js';
+import { handleError } from '../utils/errorHandler.js';
+import { Usuario } from '../models/index.js'; // Para buscar el usuario por email si es necesario
 
 /**
- * Autentica un token del encabezado de la solicitud.
- * @param {object} req - Objeto de solicitud de Express.
- * @param {object} res - Objeto de respuesta de Express.
- * @param {function} next - Función del siguiente middleware de Express.
+ * Verifica el token de acceso JWT.
+ * Si es válido, añade el objeto del usuario (o al menos su ID y roles) a `req.user`.
  */
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN
+const verifyJWT = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || req.headers.Authorization;
 
-  if (token == null) {
-    return res.status(401).json({ message: "No se proporcionó token." });
-  }
-
-  jwt.verify(token, ACCESS_JWT_SECRET, async (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: "Token inválido o expirado." });
+    if (!authHeader?.startsWith('Bearer ')) {
+      return respondError(req, res, 401, 'No autorizado. Formato de token inválido.');
     }
-    // Adjuntar el objeto de usuario (decodificado del token) a la solicitud
-    // Es una buena práctica obtener el usuario completo de la base de datos para datos frescos,
-    // especialmente para verificaciones de roles y estado.
-    try {
-      const foundUser = await User.findById(user.id); // Asumiendo que el token contiene user.id
-      if (!foundUser) {
-        return res.status(404).json({ message: "Usuario no encontrado." });
+
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, ACCESS_JWT_SECRET, async (err, decoded) => {
+      if (err) {
+        // Manejar errores específicos del token
+        if (err.name === 'TokenExpiredError') {
+          return respondError(req, res, 401, 'No autorizado. Token expirado.');
+        }
+        if (err.name === 'JsonWebTokenError') {
+          return respondError(req, res, 401, 'No autorizado. Token inválido.');
+        }
+        return respondError(req, res, 403, 'No autorizado.', err.message);
       }
-      req.user = foundUser;
-      next();
-    } catch (dbError) {
-      return res.status(500).json({ message: "Error al obtener los datos del usuario.", error: dbError.message });
-    }
-  });
-}
 
-module.exports = {
-  authenticateToken,
+      // El token es válido, 'decoded' contiene el payload (ej. email, id, roles)
+      // Buscamos al usuario en la BD para asegurarnos de que existe y obtener info actualizada.
+      // Esto es opcional pero más seguro. Podrías confiar en el payload del token si prefieres.
+      const usuario = await Usuario.findOne({
+        where: { email: decoded.email }, // Asumiendo que el email está en el token
+        // attributes: ['id', 'email', 'esDirectiva', 'directivaVigente', 'roleId'], // Selecciona los campos que necesitas
+        // include: [{ model: Role, as: 'role', attributes: ['name'] }] // Incluye el rol
+      });
+
+      if (!usuario) {
+        return respondError(req, res, 401, 'No autorizado. Usuario del token no encontrado.');
+      }
+      
+      // Adjuntar información del usuario (o al menos el ID) al objeto request.
+      // Esto permite que los siguientes middlewares y controladores accedan al usuario autenticado.
+      req.user = {
+        id: usuario.id,
+        email: usuario.email,
+        esDirectiva: usuario.esDirectiva,
+        directivaVigente: usuario.directivaVigente,
+        // role: usuario.role ? usuario.role.name : null, // Nombre del rol
+        // Puedes añadir más campos si son necesarios para la autorización
+      };
+      // También podrías mantener la estructura original si es requerida por otros middlewares:
+      // req.email = decoded.email;
+      // req.roles = decoded.roles; // Si los roles están directamente en el token y no los buscas de la BD
+
+      next();
+    });
+  } catch (error) {
+    handleError(error, 'authentication.middleware -> verifyJWT');
+    return respondError(req, res, 500, 'Error interno del servidor durante la autenticación.');
+  }
 };
+
+export default verifyJWT;

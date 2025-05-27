@@ -1,16 +1,5 @@
-/**
- * @file Constantes de roles.
- * @description Define los roles para la aplicación.
- */
+// src/constants/roles.constants.js
 
-const ROLES = {
-    ADMIN: "admin",
-    NEIGHBOR: "neighbor",
-    DIRECTIVE: "directive", // Rol añadido
-  };
-  
-  module.exports = {
-    ROLES,
-  };
+const ROLES = ['user', 'admin', 'directiva'];
 
-  
+export default ROLES;
