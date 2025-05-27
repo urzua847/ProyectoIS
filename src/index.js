@@ -1,8 +1,6 @@
 // src/server.js
 import { PORT, HOST } from './config/configEnv.js';
-import cors from 'cors';
 import express, { urlencoded, json } from 'express';
-import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 
 // Importar conexión a la BD (PostgreSQL con Sequelize)
@@ -93,11 +91,9 @@ async function setupServer() {
   try {
     const server = express();
     server.disable('x-powered-by');
-    server.use(cors({ credentials: true, origin: true })); // Configura según tus necesidades de frontend
     server.use(urlencoded({ extended: true }));
     server.use(json());
     server.use(cookieParser());
-    server.use(morgan('dev'));
 
     // Rutas principales (ya tienes /api prefijado en tu indexRoutes)
     // server.use('/api', indexRoutes); // Si indexRoutes ya maneja /auth y /users
