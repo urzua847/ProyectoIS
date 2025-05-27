@@ -5,6 +5,7 @@ import { handleError } from '../utils/errorHandler.js';
 import { loginSchema } //, refreshTokenSchema (si se usa en body)
   from '../schemas/auth.schema.js';
 import { REFRESH_JWT_EXPIRES_IN } from '../config/configEnv.js'; // Para la cookie
+import UserService from '../services/user.service.js';
 
 class AuthController {
   async login(req, res) {

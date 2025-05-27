@@ -1,4 +1,3 @@
-// src/server.js
 import { PORT, HOST } from './config/configEnv.js';
 import express, { urlencoded, json } from 'express';
 import cookieParser from 'cookie-parser';
