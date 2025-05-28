@@ -1,9 +1,5 @@
-// src/schemas/auth.schema.js
 import Joi from 'joi';
 
-/**
- * Esquema de validación para el cuerpo de la solicitud de inicio de sesión.
- */
 export const loginSchema = Joi.object({
   email: Joi.string().email().required().messages({
     'string.empty': 'El correo electrónico no puede estar vacío.',
@@ -20,10 +16,7 @@ export const loginSchema = Joi.object({
   'object.unknown': 'No se permiten propiedades adicionales.',
 });
 
-/**
- * Esquema de validación para el cuerpo de la solicitud de refresco de token.
- * (Si se envía el refreshToken en el body, usualmente va en una cookie httpOnly)
- */
+
 export const refreshTokenSchema = Joi.object({
   refreshToken: Joi.string().required().messages({
     'string.empty': 'El token de refresco no puede estar vacío.',

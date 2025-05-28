@@ -1,5 +1,5 @@
 import { Vecino } from '../models/index.js';
-import { handleError } from '../utils/errorHandler.js'; // Asumo que tienes un manejador de errores
+import { handleError } from '../utils/errorHandler.js';
 
 class VecinoService {
   async getAllVecinos() {
@@ -27,7 +27,6 @@ class VecinoService {
 
   async createVecino(vecinoData) {
     try {
-      // Validación de existencia por email podría ir aquí o ser manejada por la BD
       const existingVecino = await Vecino.findOne({ where: { email: vecinoData.email } });
       if (existingVecino) {
         return [null, 'El correo electrónico ya está registrado para otro vecino.'];
@@ -36,7 +35,6 @@ class VecinoService {
       const nuevoVecino = await Vecino.create(vecinoData);
       return [nuevoVecino, null];
     } catch (error) {
-      // Captura de errores de validación de Sequelize
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map(e => e.message).join(', ');
         return [null, `Error de validación: ${messages}`];
@@ -53,7 +51,6 @@ class VecinoService {
         return [null, 'Vecino no encontrado.'];
       }
 
-      // Evitar actualizar email a uno ya existente (excluyendo el propio vecino)
       if (vecinoData.email && vecinoData.email !== vecino.email) {
         const existingVecino = await Vecino.findOne({ where: { email: vecinoData.email } });
         if (existingVecino) {

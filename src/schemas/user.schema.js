@@ -13,21 +13,20 @@ const userBaseSchema = {
     'string.base': 'El correo electrónico debe ser de tipo string.',
     'string.email': 'El correo electrónico debe tener un formato válido.',
   }),
-  password: Joi.string().min(6).messages({ // Mínimo 6 caracteres para la contraseña
+  password: Joi.string().min(6).messages({ 
     'string.empty': 'La contraseña no puede estar vacía.',
     'string.min': 'La contraseña debe tener al menos 6 caracteres.',
     'string.base': 'La contraseña debe ser de tipo string.',
   }),
-  rut: Joi.string().pattern(/^[0-9]{7,8}-[0-9kK]$/).allow(null, '').messages({ // RUT chileno opcional
+  rut: Joi.string().pattern(/^[0-9]{7,8}-[0-9kK]$/).allow(null, '').messages({ 
     'string.pattern.base': 'El RUT debe tener un formato válido (ej: 12345678-K).',
     'string.base': 'El RUT debe ser de tipo string.',
   }),
-  roleId: Joi.number().integer().positive().messages({ // Asumiendo que el ID del rol es numérico
+  roleId: Joi.number().integer().positive().messages({ 
      'number.base': 'El ID del rol debe ser un número.',
      'number.integer': 'El ID del rol debe ser un entero.',
      'number.positive': 'El ID del rol debe ser un número positivo.',
   }),
-  // Campos específicos de la directiva
   esDirectiva: Joi.boolean().messages({
     'boolean.base': 'El campo "esDirectiva" debe ser booleano.',
   }),
@@ -45,7 +44,6 @@ export const createUserSchema = Joi.object({
   username: userBaseSchema.username.required(),
   email: userBaseSchema.email.required(),
   password: userBaseSchema.password.required(),
-  // roleId es opcional al crear, podría tener un default o asignarse después
 }).messages({
   'object.unknown': 'No se permiten propiedades adicionales.',
 });
@@ -53,20 +51,19 @@ export const createUserSchema = Joi.object({
 export const updateUserSchema = Joi.object({
   username: userBaseSchema.username,
   email: userBaseSchema.email,
-  password: userBaseSchema.password.optional(), // Contraseña opcional al actualizar
+  password: userBaseSchema.password.optional(),
   rut: userBaseSchema.rut,
   roleId: userBaseSchema.roleId,
   esDirectiva: userBaseSchema.esDirectiva,
   directivaCargo: userBaseSchema.directivaCargo,
   directivaVigente: userBaseSchema.directivaVigente,
-  // No permitir cambiar ciertos campos sensibles o manejarlo con cuidado
-}).min(1).messages({ // Debe haber al menos un campo para actualizar
+}).min(1).messages({ 
   'object.min': 'Debe proporcionar al menos un campo para actualizar.',
   'object.unknown': 'No se permiten propiedades adicionales.',
 });
 
 export const userIdSchema = Joi.object({
-  id: Joi.number().integer().positive().required().messages({ // Asumiendo ID numérico de Sequelize
+  id: Joi.number().integer().positive().required().messages({ 
     'number.base': 'El ID debe ser un número.',
     'number.integer': 'El ID debe ser un entero.',
     'number.positive': 'El ID debe ser un número positivo.',

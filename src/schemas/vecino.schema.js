@@ -1,4 +1,3 @@
-// src/schemas/vecino.schema.js
 import Joi from 'joi';
 
 const vecinoBaseSchema = {

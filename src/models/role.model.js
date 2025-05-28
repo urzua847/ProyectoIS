@@ -1,7 +1,5 @@
-// src/models/role.model.js
-// Adaptación del modelo Role para Sequelize
 import { DataTypes } from 'sequelize';
-import ROLES from '../constants/roles.constants.js'; // Asumiendo que este archivo define los roles como un array de strings
+import ROLES from '../constants/roles.constants.js'; 
 
 export default (sequelize) => {
   const Role = sequelize.define('Role', {
@@ -16,14 +14,14 @@ export default (sequelize) => {
       unique: true,
       validate: {
         isIn: {
-          args: [ROLES], // Valida que el nombre del rol esté en la lista de ROLES permitidos
+          args: [ROLES], 
           msg: 'El rol especificado no es válido.',
         },
       },
     },
   }, {
     tableName: 'roles',
-    timestamps: false, // Generalmente los roles no necesitan timestamps
+    timestamps: false,
   });
   return Role;
 };

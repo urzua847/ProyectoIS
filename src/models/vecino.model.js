@@ -42,16 +42,15 @@ export default (sequelize) => {
     },
     direccion: {
       type: DataTypes.STRING,
-      allowNull: true, // Puede ser opcional
+      allowNull: true,
     },
-    informacionContacto: { // Para otros datos de contacto
+    informacionContacto: { 
       type: DataTypes.TEXT,
       allowNull: true,
     },
-    // createdAt y updatedAt son automáticos con Sequelize
   }, {
     tableName: 'vecinos',
-    timestamps: true, // Habilita createdAt y updatedAt
+    timestamps: true, 
   });
   return Vecino;
 };

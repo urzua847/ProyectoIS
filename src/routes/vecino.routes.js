@@ -1,8 +1,7 @@
-// src/routes/vecino.routes.js
 import { Router } from 'express';
 import VecinoController from '../controllers/vecino.controller.js';
-import authenticationMiddleware from '../middlewares/authentication.middleware.js'; // Tu middleware JWT
-import { isAdminOrDirectiva } from '../middlewares/authorization.middleware.js'; // Un nuevo middleware de autorización
+import authenticationMiddleware from '../middlewares/authentication.middleware.js'; 
+import { isAdminOrDirectiva } from '../middlewares/authorization.middleware.js';
 
 const router = Router();
 

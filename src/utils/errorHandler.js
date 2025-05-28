@@ -2,8 +2,8 @@
 
 /**
  * Manejador de errores fatales
- * @param {Object} error Objecto con las especificaciones del error
- * @param {String} msg Mensaje para dar contexto al error
+ * @param {Object} error
+ * @param {String} msg 
  */
 function handleFatalError(error, msg) {
   console.log("[FATAL ERROR] Apagando servidor \n", msg);
@@ -13,8 +13,8 @@ function handleFatalError(error, msg) {
 
 /**
  * Manejador de errores
- * @param {Object} error Objecto con las especificaciones del error
- * @param {String} msg Mensaje para dar contexto al error
+ * @param {Object} error 
+ * @param {String} msg 
  */
 function handleError(error, msg) {
   console.log("❌ [ERROR] A ocurrido un error en: \n📁", msg);
