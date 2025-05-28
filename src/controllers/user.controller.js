@@ -1,4 +1,3 @@
-// src/controllers/user.controller.js
 import UserService from '../services/user.service.js';
 import { respondSuccess, respondError } from '../utils/resHandler.js';
 import { handleError } from '../utils/errorHandler.js';
@@ -9,7 +8,7 @@ class UserController {
     try {
       const [users, error] = await UserService.getAllUsers();
       if (error) return respondError(req, res, 500, error);
-      if (users.length === 0) return respondSuccess(req, res, 204); // No content
+      if (users.length === 0) return respondSuccess(req, res, 204);
       respondSuccess(req, res, 200, users);
     } catch (e) {
       handleError(e, 'user.controller -> getAllUsers');
@@ -25,7 +24,7 @@ class UserController {
       const { id } = req.params;
       const [user, error] = await UserService.getUserById(id);
 
-      if (error) return respondError(req, res, 404, error); // 404 si no se encuentra
+      if (error) return respondError(req, res, 404, error); 
       respondSuccess(req, res, 200, user);
     } catch (e) {
       handleError(e, 'user.controller -> getUserById');
@@ -39,7 +38,7 @@ class UserController {
       if (bodyError) return respondError(req, res, 400, bodyError.details[0].message);
 
       const [newUser, error] = await UserService.createUser(req.body);
-      if (error) return respondError(req, res, 400, error); // 400 por error de data o validación
+      if (error) return respondError(req, res, 400, error); 
       respondSuccess(req, res, 201, newUser);
     } catch (e) {
       handleError(e, 'user.controller -> createUser');
@@ -58,7 +57,7 @@ class UserController {
       const { id } = req.params;
       const [updatedUser, error] = await UserService.updateUser(id, req.body);
 
-      if (error) return respondError(req, res, 400, error); // 404 si no encontrado, 400 si data error
+      if (error) return respondError(req, res, 400, error); 
       respondSuccess(req, res, 200, updatedUser);
     } catch (e) {
       handleError(e, 'user.controller -> updateUser');
@@ -75,7 +74,7 @@ class UserController {
       const [result, error] = await UserService.deleteUser(id);
 
       if (error) return respondError(req, res, 404, error);
-      respondSuccess(req, res, 200, result); // o 204 si no devuelves contenido
+      respondSuccess(req, res, 200, result); 
     } catch (e) {
       handleError(e, 'user.controller -> deleteUser');
       respondError(req, res, 500, 'Error interno del servidor.');

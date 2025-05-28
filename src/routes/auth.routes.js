@@ -1,7 +1,6 @@
-// src/routes/auth.routes.js
 import { Router } from 'express';
 import AuthController from '../controllers/auth.controller.js';
-import authenticationMiddleware from '../middlewares/authentication.middleware.js'; // Para proteger /me
+import authenticationMiddleware from '../middlewares/authentication.middleware.js'; 
 
 const router = Router();
 
@@ -15,7 +14,6 @@ router.post('/refresh', AuthController.refresh);
 router.post('/logout', AuthController.logout);
 
 // GET /api/auth/me - Obtener perfil del usuario actual (protegido)
-// Este endpoint es útil para que el frontend verifique la sesión y obtenga datos del usuario.
 router.get('/me', authenticationMiddleware, AuthController.getCurrentUser);
 
 

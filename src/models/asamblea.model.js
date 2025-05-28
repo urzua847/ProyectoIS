@@ -8,11 +8,11 @@ export default (sequelize) => {
       autoIncrement: true,
     },
     fecha: {
-      type: DataTypes.DATEONLY, // Solo fecha, sin hora
+      type: DataTypes.DATEONLY,
       allowNull: false,
     },
     hora: {
-      type: DataTypes.TIME, // Solo hora
+      type: DataTypes.TIME,
       allowNull: false,
     },
     descripcion: {
@@ -24,7 +24,6 @@ export default (sequelize) => {
       allowNull: false,
       defaultValue: 'planificada',
     },
-    // creadorId se añadirá por la asociación con Usuario
   }, {
     tableName: 'asambleas',
     timestamps: true,

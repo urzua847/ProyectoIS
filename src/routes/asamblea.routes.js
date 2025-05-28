@@ -1,12 +1,11 @@
-// src/routes/asamblea.routes.js
 import { Router } from 'express';
 import AsambleaController from '../controllers/asamblea.controller.js';
 import authenticationMiddleware from '../middlewares/authentication.middleware.js';
-import { isDirectivaVigente } from '../middlewares/authorization.middleware.js'; // Middleware para verificar si es directiva vigente
+import { isDirectivaVigente } from '../middlewares/authorization.middleware.js'; 
 
 const router = Router();
 
-router.use(authenticationMiddleware); // Todas las rutas de asamblea requieren autenticación
+router.use(authenticationMiddleware); 
 
 // GET /api/asambleas - Obtener todas las asambleas (abierto a usuarios autenticados para ver)
 router.get('/', AsambleaController.getAllAsambleas);

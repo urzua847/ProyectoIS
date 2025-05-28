@@ -1,11 +1,11 @@
-import { Usuario, Role, sequelize } from '../models/index.js'; // Modelos Sequelize
+import { Usuario, Role, sequelize } from '../models/index.js';
 import { handleError } from '../utils/errorHandler.js';
 
 class UserService {
   async getAllUsers() {
     try {
       const users = await Usuario.findAll({
-        attributes: { exclude: ['password'] }, // No devolver la contraseña
+        attributes: { exclude: ['password'] }, 
         include: [{ model: Role, as: 'role', attributes: ['id', 'name'] }],
         order: [['username', 'ASC']],
       });
@@ -35,7 +35,6 @@ class UserService {
   async createUser(userData) {
     const t = await sequelize.transaction();
     try {
-      // Verificar si el email o username ya existen
       const existingUserByEmail = await Usuario.findOne({ where: { email: userData.email }, transaction: t });
       if (existingUserByEmail) {
         await t.rollback();
@@ -47,7 +46,6 @@ class UserService {
         return [null, 'El nombre de usuario ya está en uso.'];
       }
 
-      // Si se proporciona roleId, verificar que el rol exista
       if (userData.roleId) {
         const roleExists = await Role.findByPk(userData.roleId, { transaction: t });
         if (!roleExists) {
@@ -55,22 +53,18 @@ class UserService {
           return [null, 'El rol especificado no existe.'];
         }
       } else {
-        // Asignar rol 'user' por defecto si no se especifica roleId
         const defaultRole = await Role.findOne({ where: { name: 'user' }, transaction: t });
         if (defaultRole) {
           userData.roleId = defaultRole.id;
         } else {
-          // Esto no debería pasar si los roles se crean en initialSetup
           await t.rollback();
           return [null, 'Rol por defecto "user" no encontrado. Configure los roles iniciales.'];
         }
       }
 
-      // La contraseña se hashea automáticamente por el hook 'beforeCreate' en el modelo Usuario
       const newUser = await Usuario.create(userData, { transaction: t });
 
       await t.commit();
-      // Devolver el usuario sin la contraseña
       const { password, ...userWithoutPassword } = newUser.toJSON();
       return [userWithoutPassword, null];
     } catch (error) {
@@ -93,7 +87,6 @@ class UserService {
         return [null, 'Usuario no encontrado.'];
       }
 
-      // Evitar actualizar email/username a uno ya existente (excluyendo el propio usuario)
       if (userData.email && userData.email !== user.email) {
         const existingUser = await Usuario.findOne({ where: { email: userData.email }, transaction: t });
         if (existingUser) {
@@ -109,8 +102,7 @@ class UserService {
         }
       }
       
-      // Si se actualiza la contraseña, el hook 'beforeUpdate' en el modelo la hasheará.
-      // Si se actualiza roleId, verificar que el rol exista
+
       if (userData.roleId && userData.roleId !== user.roleId) {
         const roleExists = await Role.findByPk(userData.roleId, { transaction: t });
         if (!roleExists) {
@@ -144,7 +136,7 @@ class UserService {
       if (!user) {
         return [null, 'Usuario no encontrado.'];
       }
-      await user.destroy(); // Esto ejecutará un borrado lógico si paranoid: true está en el modelo
+      await user.destroy(); 
       return [{ message: 'Usuario eliminado correctamente.' }, null];
     } catch (error) {
       handleError(error, 'user.service -> deleteUser');

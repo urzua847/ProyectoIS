@@ -1,5 +1,3 @@
-// Este es una adaptación del modelo User que proporcionaste, usando Sequelize.
-// Deberás ajustar los campos y validaciones según tus necesidades exactas.
 import { DataTypes } from 'sequelize';
 import bcrypt from 'bcryptjs';
 
@@ -10,7 +8,7 @@ export default (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    username: { // Podría ser nombre + apellido o un nombre de usuario único
+    username: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: {
@@ -31,27 +29,23 @@ export default (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    rut: { // Si lo necesitas para los usuarios/directiva
+    rut: {
       type: DataTypes.STRING,
-      allowNull: true, // O false si es obligatorio
+      allowNull: true, 
       unique: true,
     },
-    // directivaEstado se usaría para saber si un miembro de la directiva está activo/vigente
-    // Podrías tener una tabla separada para 'MiembroDirectiva' o añadir campos aquí.
-    // Por simplicidad, lo añado aquí, pero considera normalizarlo.
     esDirectiva: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
-    directivaCargo: { // Ejemplo: Presidente, Secretario, Tesorero
+    directivaCargo: {
         type: DataTypes.STRING,
         allowNull: true,
     },
-    directivaVigente: { // Para saber si su periodo en la directiva está activo
+    directivaVigente: { 
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
-    // roleId se añadirá por la asociación con Role
   }, {
     tableName: 'usuarios',
     timestamps: true,
@@ -71,7 +65,6 @@ export default (sequelize) => {
     },
   });
 
-  // Método para comparar contraseñas
   Usuario.prototype.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
   };

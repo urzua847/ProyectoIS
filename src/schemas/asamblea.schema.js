@@ -1,13 +1,12 @@
-// src/schemas/asamblea.schema.js
 import Joi from 'joi';
 
 const asambleaBaseSchema = {
-  fecha: Joi.date().iso().required().messages({ // Formato YYYY-MM-DD
+  fecha: Joi.date().iso().required().messages({ 
     'date.base': 'La fecha debe ser una fecha válida.',
     'date.format': 'La fecha debe estar en formato ISO (YYYY-MM-DD).',
     'any.required': 'La fecha de la asamblea es obligatoria.',
   }),
-  hora: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({ // Formato HH:MM (24h)
+  hora: Joi.string().pattern(/^([01]\d|2[0-3]):([0-5]\d)$/).required().messages({ 
     'string.pattern.base': 'La hora debe estar en formato HH:MM (ej: 14:30).',
     'any.required': 'La hora de la asamblea es obligatoria.',
   }),
@@ -19,14 +18,12 @@ const asambleaBaseSchema = {
   estado: Joi.string().valid('planificada', 'realizada', 'cancelada').messages({
     'any.only': 'El estado de la asamblea debe ser uno de: planificada, realizada, cancelada.',
   }),
-  // creadorId se tomará del usuario autenticado, no del body
 };
 
 export const createAsambleaSchema = Joi.object({
   fecha: asambleaBaseSchema.fecha,
   hora: asambleaBaseSchema.hora,
   descripcion: asambleaBaseSchema.descripcion,
-  // 'estado' tendrá un valor por defecto en el modelo o servicio al crear.
 }).messages({
   'object.unknown': 'No se permiten propiedades adicionales en la creación de la asamblea.',
 });

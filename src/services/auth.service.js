@@ -1,6 +1,5 @@
-// src/services/auth.service.js
 import jwt from 'jsonwebtoken';
-import { Usuario, Role } from '../models/index.js'; // Modelos Sequelize
+import { Usuario, Role } from '../models/index.js'; 
 import {
   ACCESS_JWT_SECRET,
   REFRESH_JWT_SECRET,
@@ -11,40 +10,37 @@ import { handleError } from '../utils/errorHandler.js';
 
 class AuthService {
   /**
-   * Inicia sesión con un usuario.
-   * @param {string} email - Email del usuario.
-   * @param {string} password - Contraseña del usuario.
+   * @param {string} email 
+   * @param {string} password
    * @returns {Promise<[string|null, string|null, string|null]>} - [accessToken, refreshToken, errorMensaje]
    */
   async login(email, password) {
     try {
       const userFound = await Usuario.findOne({
         where: { email },
-        include: [{ model: Role, as: 'role', attributes: ['name'] }], // Incluir el nombre del rol
+        include: [{ model: Role, as: 'role', attributes: ['name'] }],
       });
 
       if (!userFound) {
         return [null, null, 'El correo electrónico o la contraseña son incorrectos.'];
       }
 
-      const matchPassword = await userFound.comparePassword(password); // Usar el método del modelo
+      const matchPassword = await userFound.comparePassword(password); 
       if (!matchPassword) {
         return [null, null, 'El correo electrónico o la contraseña son incorrectos.'];
       }
 
-      // Payload para el Access Token
       const accessTokenPayload = {
         id: userFound.id,
         email: userFound.email,
-        role: userFound.role ? userFound.role.name : null, // Nombre del rol
+        role: userFound.role ? userFound.role.name : null, 
         esDirectiva: userFound.esDirectiva,
         directivaVigente: userFound.directivaVigente,
       };
 
-      // Payload para el Refresh Token (generalmente más simple)
       const refreshTokenPayload = {
         id: userFound.id,
-        email: userFound.email, // Para poder buscar al usuario si es necesario
+        email: userFound.email,
       };
 
       const accessToken = jwt.sign(accessTokenPayload, ACCESS_JWT_SECRET, {
@@ -63,9 +59,8 @@ class AuthService {
   }
 
   /**
-   * Refresca el token de acceso usando un refresh token.
-   * @param {string} providedRefreshToken - El refresh token.
-   * @returns {Promise<[string|null, string|null]>} - [newAccessToken, errorMensaje]
+   * @param {string} providedRefreshToken 
+   * @returns {Promise<[string|null, string|null]>}
    */
   async refreshAccessToken(providedRefreshToken) {
     try {
@@ -79,7 +74,6 @@ class AuthService {
         return [null, 'Usuario no encontrado o token inválido.'];
       }
 
-      // Generar un nuevo Access Token
       const accessTokenPayload = {
         id: userFound.id,
         email: userFound.email,

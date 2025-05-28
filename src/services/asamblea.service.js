@@ -32,9 +32,8 @@ class AsambleaService {
   }
 
   async createAsamblea(asambleaData, creadorId) {
-    const t = await sequelize.transaction(); // Iniciar transacción
+    const t = await sequelize.transaction();
     try {
-      // 1. Verificar si el miembro de la directiva que la creó está en estado regular (activo/vigente)
       const creador = await Usuario.findByPk(creadorId, { transaction: t });
 
       if (!creador) {
@@ -42,22 +41,17 @@ class AsambleaService {
         return [null, 'Usuario creador no encontrado.'];
       }
 
-      // Asumimos que 'esDirectiva' y 'directivaVigente' son booleanos en el modelo Usuario
-      // y 'directivaCargo' indica su rol.
-      // También podrías verificar un rol específico si es necesario (ej. 'admin_directiva')
       if (!creador.esDirectiva || !creador.directivaVigente) {
         await t.rollback();
         return [null, 'El usuario no es un miembro vigente de la directiva o no tiene permisos para crear asambleas.'];
       }
 
-      // 2. Crear la asamblea
       const nuevaAsamblea = await Asamblea.create({
         ...asambleaData,
-        creadorId: creador.id, // Asegurar que el creadorId se guarda
-        estado: 'planificada', // Estado inicial
+        creadorId: creador.id,
+        estado: 'planificada', 
       }, { transaction: t });
 
-      // 3. Emitir notificación a los vecinos por correo electrónico
       const vecinos = await Vecino.findAll({ attributes: ['email', 'nombre'], transaction: t });
       if (vecinos.length > 0) {
         const listaEmails = vecinos.map(v => v.email).join(',');
@@ -77,25 +71,17 @@ class AsambleaService {
         `;
 
         try {
-            // El envío de correo no debe estar dentro de la transacción de BD
-            // ya que si falla el correo, no queremos revertir la creación de la asamblea.
-            // Sin embargo, si el envío de correo es CRÍTICO, podrías reconsiderarlo
-            // o usar un sistema de colas para reintentos.
-            // Aquí lo hacemos después de confirmar la transacción.
+
         } catch (emailError) {
-          // Si el envío de correo falla, la asamblea ya está creada.
-          // Deberías loggear este error y quizás tener un mecanismo para reintentar o notificar al admin.
           console.error(`Error al enviar correos para asamblea ${nuevaAsamblea.id}:`, emailError);
-          // No retornamos error aquí para que la creación de la asamblea sea exitosa.
-          // El usuario podría ser notificado de que la asamblea se creó pero hubo problemas con las notificaciones.
         }
       } else {
         console.log(`Asamblea ${nuevaAsamblea.id} creada, pero no hay vecinos registrados para notificar.`);
       }
       
-      await t.commit(); // Confirmar transacción si todo fue bien
+      await t.commit(); 
 
-      // Enviar correos después de confirmar la transacción
+    
        if (vecinos.length > 0) {
         const listaEmails = vecinos.map(v => v.email).join(',');
         const asunto = `Convocatoria a Asamblea: ${nuevaAsamblea.descripcion.substring(0, 50)}...`;
@@ -118,7 +104,7 @@ class AsambleaService {
 
       return [nuevaAsamblea, null];
     } catch (error) {
-      await t.rollback(); // Revertir transacción en caso de error
+      await t.rollback(); 
       if (error.name === 'SequelizeValidationError') {
         const messages = error.errors.map(e => e.message).join(', ');
         return [null, `Error de validación: ${messages}`];
@@ -129,21 +115,13 @@ class AsambleaService {
   }
 
   async updateAsamblea(id, asambleaData, editorId) {
-    // Similar a createAsamblea, verificar permisos del editorId si es necesario
     try {
       const asamblea = await Asamblea.findByPk(id);
       if (!asamblea) {
         return [null, 'Asamblea no encontrada.'];
       }
 
-      // Verificar permisos del editor (si es diferente al creador o si hay reglas específicas)
-      // const editor = await Usuario.findByPk(editorId);
-      // if (!editor || !editor.esDirectiva || !editor.directivaVigente) {
-      //   return [null, 'No tiene permisos para editar esta asamblea.'];
-      // }
-
       const updatedAsamblea = await asamblea.update(asambleaData);
-      // Podrías reenviar notificaciones si la fecha/hora/descripción cambian.
       return [updatedAsamblea, null];
     } catch (error) {
       if (error.name === 'SequelizeValidationError') {
@@ -156,14 +134,12 @@ class AsambleaService {
   }
 
   async deleteAsamblea(id, eliminadorId) {
-    // Similar, verificar permisos del eliminadorId
     try {
       const asamblea = await Asamblea.findByPk(id);
       if (!asamblea) {
         return [null, 'Asamblea no encontrada.'];
       }
       await asamblea.destroy();
-      // Podrías enviar una notificación de cancelación.
       return [{ message: 'Asamblea eliminada correctamente.' }, null];
     } catch (error) {
       handleError(error, 'asamblea.service -> deleteAsamblea');
