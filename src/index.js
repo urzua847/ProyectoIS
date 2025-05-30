@@ -4,11 +4,12 @@ import cookieParser from 'cookie-parser';
 import sequelize, { connectDB } from './config/database.js'; 
 import { Role, Usuario } from './models/index.js'; 
 
-import indexRoutess from './routes/index.routes.js'; 
+import indexRoutes from './routes/index.routes.js'; 
 import vecinoRoutes from './routes/vecino.routes.js';
 import asambleaRoutes from './routes/asamblea.routes.js';
 import authRoutes from './routes/auth.routes.js'; 
 import userRoutes from './routes/user.routes.js'; 
+import informeRoutes from './routes/informe.routes.js';
 import { handleFatalError, handleError } from './utils/errorHandler.js';
 
 async function initialSetup() {
@@ -45,6 +46,7 @@ async function setupServer() {
     server.use('/api/users', userRoutes);
     server.use('/api/vecinos', vecinoRoutes);
     server.use('/api/asambleas', asambleaRoutes);
+    server.use('api/informes', informeRoutes);
 
 
     server.listen(PORT, () => {
