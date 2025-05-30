@@ -34,4 +34,4 @@ Usuario.belongsTo(Role, {
 });
 
 
-export { sequelize, Vecino, Asamblea, Usuario, Role };
+export { sequelize, Vecino, Asamblea, Usuario, Role, Informe };

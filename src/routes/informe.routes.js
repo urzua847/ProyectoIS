@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import InformeController from '../controllers/informe.controller';
-import authenticationMiddleware from '../middlewares/authentication.middleware';
-import { isAdminOrDirectiva } from '../middlewares/authorization.middleware';
+import InformeController from '../controllers/informe.controller.js';
+import authenticationMiddleware from '../middlewares/authentication.middleware.js';
+import { isAdminOrDirectiva } from '../middlewares/authorization.middleware.js';
 
 const router = Router();
 
