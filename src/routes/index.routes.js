@@ -1,17 +1,23 @@
-import { Router } from 'express';
-import authRoutes from './auth.routes.js';
-import userRoutes from './user.routes.js';  
-import vecinoRoutes from './vecino.routes.js';
-import asambleaRoutes from './asamblea.routes.js';
-import informeRoutes from './informe.routes.js';
-
+"use strict";
+import { Router } from "express";
+import authRoutes from "./auth.routes.js";
+import vecinoRoutes from "./vecino.routes.js";
+import asambleaRoutes from "./asamblea.routes.js";
+import actaAsambleaRoutes from "./actaAsamblea.routes.js";
 
 const router = Router();
 
-router.use('/auth', authRoutes);
-router.use('/users', userRoutes);
-router.use('/vecinos', vecinoRoutes); 
-router.use('/asambleas', asambleaRoutes);
-router.use('./informes', informeRoutes);
+// api/auth/login, /api/auth/register
+router.use("/auth", authRoutes);
+
+
+// /api/vecinos/, /api/vecinos/:id
+router.use("/vecinos", vecinoRoutes);
+
+// /api/asambleas/, /api/asambleas/:id
+router.use("/asambleas", asambleaRoutes);
+
+// /api/actas/, /api/actas/:id
+router.use("/actas", actaAsambleaRoutes); // Rutas de actas a nivel raíz
 
 export default router;
