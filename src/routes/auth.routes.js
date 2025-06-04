@@ -1,20 +1,34 @@
-import { Router } from 'express';
-import AuthController from '../controllers/auth.controller.js';
-import authenticationMiddleware from '../middlewares/authentication.middleware.js'; 
+    "use strict";
+    import { Router } from "express";
+    import {
+      loginController,
+      registerController, 
+      logoutController,
+      refreshTokenController,
+      getProfileController, 
+    } from "../controllers/auth.controller.js";
+    import { authenticateJwt } from "../middlewares/authentication.middleware.js"; 
 
-const router = Router();
+    const router = Router();
 
-// POST /api/auth/login - Iniciar sesión
-router.post('/login', AuthController.login);
+    // Ruta para iniciar sesión de un vecino
+    // POST /api/auth/login
+    router.post("/login", loginController);
 
-// POST /api/auth/refresh - Refrescar token de acceso (usando cookie httpOnly)
-router.post('/refresh', AuthController.refresh);
+    // Ruta para registrar un nuevo vecino
+    // POST /api/auth/register
+    router.post("/register", registerController);
 
-// POST /api/auth/logout - Cerrar sesión (limpia la cookie httpOnly)
-router.post('/logout', AuthController.logout);
+    // Ruta para cerrar sesión
+    // POST /api/auth/logout
+    router.post("/logout", logoutController);
 
-// GET /api/auth/me - Obtener perfil del usuario actual (protegido)
-router.get('/me', authenticationMiddleware, AuthController.getCurrentUser);
+    // Ruta para refrescar el Access Token usando el Refresh Token (que se espera en una cookie HttpOnly)
+    // POST /api/auth/refresh-token
+    router.post("/refresh-token", refreshTokenController);
 
+    // Ruta para obtener el perfil del vecino actualmente autenticado
+    // GET /api/auth/profile
+    router.get("/profile", authenticateJwt, getProfileController);
 
-export default router;
+    export default router;

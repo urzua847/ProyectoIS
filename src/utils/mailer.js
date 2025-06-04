@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 import { EMAIL_HOST, EMAIL_PORT, EMAIL_USER, EMAIL_PASS, EMAIL_FROM } from '../config/configEnv.js';
 
 const transporter = nodemailer.createTransport({
@@ -31,10 +31,10 @@ export const sendEmail = async (to, subject, text, html) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Correo enviado: %s', info.messageId);
+    console.log("Correo enviado: %s", info.messageId);
     return info;
   } catch (error) {
-    console.error('Error al enviar correo:', error);
+    console.error("Error al enviar correo:", error);
     throw error; 
   }
 };
