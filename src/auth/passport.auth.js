@@ -1,6 +1,6 @@
 "use strict";
 import passport from "passport";
-import Vecino from "../entity/Vecino.entity.js"; 
+import Vecino from "../entity/vecino.entity.js"; 
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 import { AppDataSource } from "../config/configDb.js";
